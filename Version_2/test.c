@@ -175,7 +175,7 @@ int main(){
         scanf("%s", nomFichier);
         strcat(nomFichier, ".txt");
 
-        enregistrer_partie(deplacement,nomFichier);
+        enregistrerDeplacements(deplacement, nomFichier);
 
     }
 
