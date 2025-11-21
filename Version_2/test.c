@@ -175,7 +175,7 @@ int main(){
         scanf("%s", nomFichier);
         strcat(nomFichier, ".txt");
 
-        enregistrerDeplacements(deplacement, nomFichier);
+        //enregistrerDeplacements(deplacement, nomFichier);
 
     }
 
@@ -582,6 +582,7 @@ void remplace_car(tPlateau plateau, tPlateau copiePlateau, int posJoueur[2]){
 
 void memoire_deplacement(char *val_seul, char *val_caisse, tTabDeplacement deplacementPlateau, bool *deplSeul, bool *deplCaisse, int *nbrCoups){
     
+    int i;
 
     if( (*deplSeul == true) && (*deplCaisse == false)){
 
@@ -593,8 +594,9 @@ void memoire_deplacement(char *val_seul, char *val_caisse, tTabDeplacement depla
         deplacementPlateau[*nbrCoups] = *val_caisse;
         
     }
-    printf("%c \n", deplacementPlateau[ *nbrCoups]);
-
+    for(i = 0 ; i < *nbrCoups ; i++){
+        printf("%c", deplacementPlateau[i]);
+    }
 }
 
 
