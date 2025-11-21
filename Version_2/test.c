@@ -86,7 +86,7 @@ void zoom_in_out(char touche, int*, tPlateau plateau, char*, int*);
 void enregistrerDeplacements(tTabDeplacement t, int nb, char fic[]);
 
 void memoire_deplacement(char *val_seul, char *val_caisse, tTabDeplacement deplacementPlateau, bool *deplSeul, bool *deplCaisse, int*);
-
+void revenir_coups(tTabDeplacement deplacement, int *nbrCoups );
 
 /**
  * @brief Fonction principale permettant d'afficher et jouer au sokoban
@@ -159,6 +159,9 @@ int main(){
                 abandon = true;
 
                 printf("Vous avez abandonner \n");
+            }
+            if(touche == UNDO){
+                memoire_deplacement(deplacement, &nbrCoups);
             }
 	    zoom_in_out(touche, &zoom, plateau, niveau, &nbrCoups);
         }
@@ -599,7 +602,14 @@ void memoire_deplacement(char *val_seul, char *val_caisse, tTabDeplacement depla
 }
 
 
-void revenir_coups(){
+void revenir_coups(tTabDeplacement deplacement, int *nbrCoups ){
+    int i;
+    char val;
+
+    for(i = 0 ; i < *nbrCoups ; i++){
+        val = deplacement[*nbrCoups - i];
+    }
+    printf("%c", val);
     
 }
 
