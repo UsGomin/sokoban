@@ -199,6 +199,9 @@ void affiche_entete(char *niveau, int *nbrCoups){
     printf("D pour aller vers la droite \n");
     printf("X pour abandonner \n");
     printf("R pour recommencer \n");
+    printf("U pour revenir en arrière \n");
+    printf("+ pour zoomer \n");
+    printf("- pour dezoomer \n");
     printf("votre nombre de coups: %d \n\n", *nbrCoups);
 
 }
@@ -410,6 +413,7 @@ void bas(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int
 }
 
 
+
 /** 
  * @brief Procedure modifiant la colonne a verfier
  * @param copiePlateau de type caracteres , E/S : recoit le plateau a modifie
@@ -444,6 +448,7 @@ void droite(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, 
 */
 
 
+
 void gauche(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2, int *zoom,
 		char *val_seul, char *val_caisse,tTabDeplacement deplacement, bool *deplSeul, bool *deplCaisse, int *nbrCoups){
 
@@ -464,15 +469,9 @@ void gauche(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, 
  * @param x1 de type entier , E/S : recoit la ligne a verifier pour se depalcer
  * @param x2 de type entier , E/S : recoit la ligne a verfirer pour deplacer les caisses
  * @param y1 de type entier , E/S : recoit la colonne a verifier pour se deplacer
- * @param y2 de type emtier , E/S : recoit la colonne a verifier pour deplacer les caisses     if(verife == OUI){
+ * @param y2 de type emtier , E/S : recoit la colonne a verifier pour deplacer les caisses 
 
-        printf("Donnew un nom de fichier (max 25 car) \n");
-        scanf("%s", niveau);
-        strcat(niveau, ".sok");
 
-        enregistrer_partie(copiePlateau,niveau);
-
-    }
  */
 
 void new_plateau(int posJoueur[2], tPlateau copiePlateau, int *x1, int *x2, int *y1, int *y2, int *zoom, bool *deplSeul, bool *deplCaisse){
@@ -600,7 +599,9 @@ void memoire_deplacement(char *val_seul, char *val_caisse, tTabDeplacement depla
 }
 
 
-
+void revenir_coups(){
+    
+}
 
 
 
