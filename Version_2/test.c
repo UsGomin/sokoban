@@ -106,8 +106,8 @@ int main(){
 	bool deplSeul;
 	bool deplCaisse;
 
-    char verifie;
-    char nomFichier[26];
+    //char verifie;
+    //char nomFichier[26];
 
     int x1, x2, y1, y2, nbrCoups, zoom;
     x1 = 0;
@@ -160,27 +160,27 @@ int main(){
 
                 printf("Vous avez abandonner \n");
             }
-            if(touche == UNDO){
-                memoire_deplacement(deplacement, &nbrCoups);
-            }
+            
 	    zoom_in_out(touche, &zoom, plateau, niveau, &nbrCoups);
         }
     }
     //fin boucle while car victoire ou abandon
     
-    system("clear");
-    printf("Voulez vous enregistrez vos mouvement (\"o\" pour oui, \"n\" pour non) ? \n");
-    scanf("%c", &verifie);
+    /*while ((gagne(copiePlateau, &nbrCoups) == true) && (abandon == true)){
+        system("clear");
+        printf("Voulez vous enregistrez vos mouvement (\"o\" pour oui, \"n\" pour non) ? \n");
+        scanf("%c", &verifie);
 
-    if(verifie == OUI){
+        if(verifie == OUI){
 
-        printf("Donnez un nom de fichier (max 25 car) \n");
-        scanf("%s", nomFichier);
-        strcat(nomFichier, ".txt");
+            printf("Donnez un nom de fichier (max 25 car) \n");
+            scanf("%s", nomFichier);
+            strcat(nomFichier, ".txt");
 
-        //enregistrerDeplacements(deplacement, nomFichier);
-
-    }
+            enregistrerDeplacements(deplacement, nbrCoups, nomFichier);
+        }
+    }*/
+    
 
     return EXIT_SUCCESS;
 }
