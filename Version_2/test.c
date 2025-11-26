@@ -659,7 +659,6 @@ void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePla
 
     val_retour = deplacement[*nbrCoups];
     system("clear");
-    printf("%c", val_retour);
     if(val_retour == SOKO_SEUL_DROITE){
 
         gauche(copiePlateau, posJoueur, x1, x2, y1, y2, zoom, valCaisse,valSeul, 
