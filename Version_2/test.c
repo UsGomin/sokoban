@@ -549,6 +549,7 @@ void new_plateau(int posJoueur[2], tPlateau copiePlateau, int *x1, int *x2, int 
     }
 
     affiche_plateau(copiePlateau, zoom);
+    //mettre affiche entete ici
 
 }
 
