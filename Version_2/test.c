@@ -106,8 +106,7 @@ void memoire_deplacement(char *valSeul, char *valCaisse, tTabDeplacement deplace
      bool *deplSeul, bool *deplCaisse, int*);
 
 void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePlateau, 
-        int posJoueur[2], int *x1, int *x2, int *y1, int *y2,
-		char *valSeul, char *valCaisse, bool *deplSeul, bool *deplCaisse, tPlateau plateau);
+        int posJoueur[2], int *x1, int *x2, int *y1, int *y2, bool *deplSeul, bool *deplCaisse, tPlateau plateau);
 
 void init_plateau_deplacement(tTabDeplacement deplacement);
 
@@ -189,7 +188,7 @@ int main(){
             }
             if(touche == UNDO){
                 revenir_coups(deplacement, &nbrCoups, copiePlateau, posJoueur, &x1, &x2, &y1, &y2, 
-                     &valCaisse, &valSeul,  &deplSeul, &deplCaisse, plateau);
+                      &deplSeul, &deplCaisse, plateau);
             }
             
 	    zoom_in_out(touche, &zoom, plateau, niveau, &nbrCoups);
@@ -634,7 +633,7 @@ void memoire_deplacement(char *valSeul, char *valCaisse, tTabDeplacement deplace
     i = 0;
 
     while(deplacement[i] != VIDE){
-        (i)++;
+        i++;
     }
 
     if(deplacement[i] == VIDE){
@@ -667,7 +666,7 @@ void init_plateau_deplacement(tTabDeplacement deplacement){
 
 void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePlateau, 
         int posJoueur[2], int *x1, int *x2, int *y1, int *y2,
-		char *valSeul, char *valCaisse, bool *deplSeul, bool *deplCaisse, tPlateau plateau){
+		 bool *deplSeul, bool *deplCaisse, tPlateau plateau){
     
     char val_retour;
     int i;
@@ -675,23 +674,29 @@ void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePla
     i = 0;
    
     while(deplacement[i + 1] != VIDE){
-        val_retour = deplacement[i];
+        i++;
     }
+
+    val_retour = deplacement[i];
 
     if(val_retour == SOKO_SEUL_DROITE || val_retour == SOKO_CAISSE_DROITE){
 
         remplace_car(plateau, copiePlateau,posJoueur);
-        gauche(copiePlateau, posJoueur, x1, x2, y1, y2, valCaisse,valSeul, 
-            deplacement, deplSeul,deplCaisse, nbrCoups);
 
-        
-        
+        *y1 = -1;
+        *y2 = -2;
+
+        new_plateau(posJoueur, copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse, nbrCoups);
+
     }
     else if(val_retour == SOKO_SEUL_GAUCHE || val_retour == SOKO_CAISSE_GAUCHE){
 
         remplace_car(plateau, copiePlateau,posJoueur);
-        droite(copiePlateau, posJoueur, x1, x2, y1, y2, valCaisse,valSeul, 
-            deplacement, deplSeul,deplCaisse, nbrCoups);
+        
+        *y1 = 1;
+        *y2 = 2;
+
+        new_plateau(posJoueur, copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse, nbrCoups);
 
 
     }
