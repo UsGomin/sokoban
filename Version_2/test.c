@@ -66,8 +66,8 @@ void affiche_plateau(tPlateau plateau, int*);
 
 void affiche_entete(char*, int*);
 
-void deplacer(char touche, int posJoueur[2], tPlateau plateau, char fichier[], 
-    int* , int* , int* , int*, int*, tPlateau copiePlateau, int*,
+void deplacer(char touche, int posJoueur[2], tPlateau plateau, 
+    int* , int* , int* , int*, int*, tPlateau copiePlateau,
     char*, char*, tTabDeplacement deplacement, bool*, bool*);
 
 bool gagne(tPlateau plateau, int *nbrCoups);
@@ -79,19 +79,19 @@ void position_joueur(tPlateau plateau, char fichier[], int posJoueur[2]);
 void abandonner(tPlateau copiePlateau);
 
 void haut(tPlateau plateau, int posJoueur[2], int* , int* , int* , int*, 
-    int*, char*, char*, tTabDeplacement deplacement, bool*, bool*, int*, char fichier[]);
+     char*, char*, tTabDeplacement deplacement, bool*, bool*, int*);
 
-void gauche(tPlateau plateau, int posJoueur[2], int* , int* , int* , int*, 
-    int*, char*, char*, tTabDeplacement deplacement, bool*, bool*, int*, char fichier[]);
+void gauche(tPlateau plateau, int posJoueur[2], int* , int* , int*, int*,
+     char*, char*, tTabDeplacement deplacement, bool*, bool*, int*);
 
 void droite(tPlateau plateau, int posJoueur[2], int* , int* , int* , int*, 
-    int*, char*, char*, tTabDeplacement deplacement, bool*, bool*, int*, char fichier[]);
+     char*, char*, tTabDeplacement deplacement, bool*, bool*, int*);
 
-void bas(tPlateau plateau, int posJoueur[2], int*, int*, int*, int*, int*, 
-    char*, char*, tTabDeplacement deplacement, bool*, bool*, int*, char fichier[]);
+void bas(tPlateau plateau, int posJoueur[2], int* , int* , int* , int*, 
+     char*, char*, tTabDeplacement deplacement, bool*, bool*, int*);
 
-void new_plateau(int posJoueur[2], tPlateau plateau, int* , int* , int* , int*, int*, 
-    bool*, bool*, int*, char fichier[]);
+void new_plateau(int posJoueur[2], tPlateau plateau, int* , int* , int* , int*,
+    bool*, bool*, int*);
 
 void remplace_car(tPlateau plateau, tPlateau copiePlateau, int posJoueur[2]);
 
@@ -106,9 +106,8 @@ void memoire_deplacement(char *valSeul, char *valCaisse, tTabDeplacement deplace
      bool *deplSeul, bool *deplCaisse, int*);
 
 void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePlateau, 
-        int posJoueur[2], int *x1, int *x2, int *y1, int *y2, int *zoom,
-		char *valSeul, char *valCaisse, bool *deplSeul, 
-        bool *deplCaisse, char fichier[],tPlateau plateau);
+        int posJoueur[2], int *x1, int *x2, int *y1, int *y2,
+		char *valSeul, char *valCaisse, bool *deplSeul, bool *deplCaisse, tPlateau plateau);
 
 void init_plateau_deplacement(tTabDeplacement deplacement);
 
@@ -172,8 +171,8 @@ int main(){
 
             touche = getchar();
 
-            deplacer(touche, posJoueur, plateau, niveau, &x1, &x2, &y1, &y2, &nbrCoups, 
-                copiePlateau, &zoom, &valCaisse, &valSeul, deplacement, &deplSeul, &deplCaisse);
+            deplacer(touche, posJoueur, plateau, &x1, &x2, &y1, &y2, &nbrCoups, 
+                copiePlateau, &valCaisse, &valSeul, deplacement, &deplSeul, &deplCaisse);
 
             if(touche == RECOMMANCE){
 
@@ -190,11 +189,14 @@ int main(){
             }
             if(touche == UNDO){
                 revenir_coups(deplacement, &nbrCoups, copiePlateau, posJoueur, &x1, &x2, &y1, &y2, 
-                    &zoom, &valCaisse, &valSeul,  &deplSeul, &deplCaisse, niveau, plateau);
+                     &valCaisse, &valSeul,  &deplSeul, &deplCaisse, plateau);
             }
             
 	    zoom_in_out(touche, &zoom, plateau, niveau, &nbrCoups);
+        affiche_entete(niveau, &nbrCoups);
+        affiche_plateau(copiePlateau, &zoom);
         }
+        
     }
     //fin boucle while car victoire ou abandon
     
@@ -309,8 +311,8 @@ void zoom_in_out( char touche, int *zoom, tPlateau plateau, char *niveau, int *n
  */
 
 
-void deplacer(char touche, int posJoueur[2], tPlateau plateau, char fichier[], int *x1, int *x2, int *y1, int *y2, 
-		int *nbrCoups, tPlateau copiePlateau, int *zoom, char *valSeul, char *valCaisse, tTabDeplacement deplacement, 
+void deplacer(char touche, int posJoueur[2], tPlateau plateau, int *x1, int *x2, int *y1, int *y2, 
+		int *nbrCoups, tPlateau copiePlateau, char *valSeul, char *valCaisse, tTabDeplacement deplacement, 
         bool *deplSeul, bool *deplCaisse){
 
     *x1 = 0;
@@ -323,8 +325,8 @@ void deplacer(char touche, int posJoueur[2], tPlateau plateau, char fichier[], i
 
         system("clear");
         remplace_car(plateau, copiePlateau,posJoueur);
-        haut(copiePlateau, posJoueur, x1, x2, y1, y2, zoom, valCaisse,valSeul, 
-            deplacement, deplSeul,deplCaisse, nbrCoups,fichier);
+        haut(copiePlateau, posJoueur, x1, x2, y1, y2, valCaisse,valSeul, 
+            deplacement, deplSeul,deplCaisse, nbrCoups);
 
 
     }
@@ -332,16 +334,16 @@ void deplacer(char touche, int posJoueur[2], tPlateau plateau, char fichier[], i
 
         system("clear");
         remplace_car(plateau, copiePlateau,posJoueur);
-        bas(copiePlateau, posJoueur, x1, x2, y1, y2, zoom, valCaisse, valSeul, 
-            deplacement, deplSeul, deplCaisse, nbrCoups,fichier);
+        bas(copiePlateau, posJoueur, x1, x2, y1, y2, valCaisse,valSeul, 
+            deplacement, deplSeul,deplCaisse, nbrCoups);
     }
     else if(touche == GAUCHE) {
 
             
         system("clear");
         remplace_car(plateau, copiePlateau,posJoueur);
-        gauche(copiePlateau, posJoueur, x1, x2, y1, y2, zoom, valCaisse,valSeul, 
-            deplacement, deplSeul, deplCaisse, nbrCoups,fichier); 
+        gauche(copiePlateau, posJoueur, x1, x2, y1, y2, valCaisse,valSeul, 
+            deplacement, deplSeul,deplCaisse, nbrCoups); 
 
     }
     else if(touche == DROITE) {
@@ -349,8 +351,8 @@ void deplacer(char touche, int posJoueur[2], tPlateau plateau, char fichier[], i
               
         system("clear");
         remplace_car(plateau, copiePlateau,posJoueur);
-        droite(copiePlateau, posJoueur, x1, x2, y1, y2, zoom, valCaisse, valSeul, 
-            deplacement, deplSeul, deplCaisse, nbrCoups,fichier);
+        droite(copiePlateau, posJoueur, x1, x2, y1, y2, valCaisse,valSeul, 
+            deplacement, deplSeul,deplCaisse, nbrCoups);
     }
 
 
@@ -410,16 +412,16 @@ void abandonner(tPlateau copiePlateau){
  * @param y1 de type entier , E/S : modifie la colonne a verifier pour se deplacer
  * @param y2 de type emtier , E/S : modifie la colonne a verifier pour deplacer les caisses
  */
-void haut(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2, int *zoom,  
+void haut(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2, 
     char *valSeul, char *valCaisse,tTabDeplacement deplacement, bool *deplSeul, 
-    bool *deplCaisse, int *nbrCoups, char fichier[]){
+    bool *deplCaisse, int *nbrCoups){
 
     *x1 = -1;
     *x2 = -2;
     *valSeul = SOKO_SEUL_HAUT;
     *valCaisse = SOKO_CAISSE_HAUT;
     
-    new_plateau(posJoueur,copiePlateau, x1, x2, y1, y2, zoom, deplSeul, deplCaisse, nbrCoups,fichier);
+    new_plateau(posJoueur,copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse, nbrCoups);
     memoire_deplacement(valSeul, valCaisse,deplacement, deplSeul, deplCaisse, nbrCoups);
 
 }
@@ -432,16 +434,16 @@ void haut(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, in
  * @param y1 de type entier , E/S : modifie la colonne a verifier pour se deplacer
  * @param y2 de type emtier , E/S : modifie la colonne a verifier pour deplacer les caisses
 */
-void bas(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2, int *zoom,
+void bas(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2,
    char *valSeul, char *valCaisse, tTabDeplacement deplacement, bool *deplSeul, 
-   bool *deplCaisse, int *nbrCoups, char fichier[]){
+   bool *deplCaisse, int *nbrCoups){
 
     *x1 = 1;
     *x2 = 2;
     *valSeul = SOKO_SEUL_BAS;
     *valCaisse = SOKO_CAISSE_BAS;
 
-    new_plateau(posJoueur,copiePlateau, x1, x2, y1, y2, zoom, deplSeul, deplCaisse, nbrCoups,fichier);
+    new_plateau(posJoueur,copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse, nbrCoups);
     memoire_deplacement(valSeul, valCaisse, deplacement, deplSeul, deplCaisse, nbrCoups);
 
 }
@@ -458,16 +460,16 @@ void bas(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int
  * @param y2 de type emtier , E/S : modifie la colonne a verifier pour deplacer les caisses
 */
 
-void droite(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2, int *zoom, 
+void droite(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2,
     char *valSeul, char *valCaisse, tTabDeplacement deplacement, bool *deplSeul, 
-    bool *deplCaisse, int *nbrCoups, char fichier[]){
+    bool *deplCaisse, int *nbrCoups){
 
     *y1 = 1;
     *y2 = 2;
     *valSeul = SOKO_SEUL_DROITE;
     *valCaisse = SOKO_CAISSE_DROITE;
 
-    new_plateau(posJoueur,copiePlateau, x1, x2, y1, y2, zoom, deplSeul, deplCaisse, nbrCoups,fichier);
+    new_plateau(posJoueur,copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse, nbrCoups);
     memoire_deplacement(valSeul, valCaisse, deplacement, deplSeul, deplCaisse, nbrCoups);
 }
 
@@ -484,16 +486,16 @@ void droite(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, 
 
 
 
-void gauche(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2, int *zoom,
+void gauche(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, int *y2,
 		char *valSeul, char *valCaisse,tTabDeplacement deplacement, bool *deplSeul, 
-        bool *deplCaisse, int *nbrCoups, char fichier[]){
+        bool *deplCaisse, int *nbrCoups){
 
     *y1 = -1;
     *y2 = -2;
     *valSeul = SOKO_SEUL_GAUCHE;
     *valCaisse = SOKO_CAISSE_GAUCHE;
 
-    new_plateau(posJoueur,copiePlateau, x1, x2, y1, y2, zoom, deplSeul, deplCaisse, nbrCoups,fichier);
+    new_plateau(posJoueur,copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse, nbrCoups);
     memoire_deplacement(valSeul, valCaisse, deplacement, deplSeul, deplCaisse, nbrCoups);
 }
 
@@ -511,7 +513,7 @@ void gauche(tPlateau copiePlateau, int posJoueur[2], int *x1, int *x2, int *y1, 
  */
 
 void new_plateau(int posJoueur[2], tPlateau copiePlateau, int *x1, int *x2, int *y1, 
-    int *y2, int *zoom, bool *deplSeul, bool *deplCaisse, int *nbrCoups, char fichier[]){
+    int *y2, bool *deplSeul, bool *deplCaisse, int *nbrCoups){
 	
     if(copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] != MUR){
 
@@ -561,7 +563,7 @@ void new_plateau(int posJoueur[2], tPlateau copiePlateau, int *x1, int *x2, int 
         (copiePlateau[posJoueur[0] + *x2][posJoueur[1] + *y2] == VIDE)){
 
             copiePlateau[posJoueur[0] + *x2][posJoueur[1] + *y2] = CAISSE;
-            copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO;
+            copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO_SUR_CIBLE;
 
             *deplSeul = false;
             *deplCaisse = true;
@@ -573,7 +575,7 @@ void new_plateau(int posJoueur[2], tPlateau copiePlateau, int *x1, int *x2, int 
         (*nbrCoups)++;
 
 	}		
-    else {
+    else{
 
         copiePlateau[posJoueur[0]][posJoueur[1]] = PERSO;
 
@@ -583,11 +585,6 @@ void new_plateau(int posJoueur[2], tPlateau copiePlateau, int *x1, int *x2, int 
         *deplSeul = false;
         *deplCaisse = false;
     }
-
-    affiche_entete(fichier, nbrCoups);
-    affiche_plateau(copiePlateau, zoom);
-    
-
 }
 
 /**
@@ -600,33 +597,30 @@ void new_plateau(int posJoueur[2], tPlateau copiePlateau, int *x1, int *x2, int 
 void remplace_car(tPlateau plateau, tPlateau copiePlateau, int posJoueur[2]){
 
     //supprime le perso de sa pos init
-    if(plateau[posJoueur[0]][posJoueur[1]] == PERSO ){
+    if(copiePlateau[posJoueur[0]][posJoueur[1]] == PERSO ){
 
         copiePlateau[posJoueur[0]][posJoueur[1]] = VIDE; 
     }
 
     //supprime le perso a sa nouvelle place
-    else if(plateau[posJoueur[0]][posJoueur[1]] == VIDE){
+    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == VIDE){
         
         copiePlateau[posJoueur[0]][posJoueur[1]] = VIDE;
     }
-    
-    //remet les cibles
-    else if(plateau[posJoueur[0]][posJoueur[1]] == CIBLE){
-
-        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
-    }
 
     //supprime le perso quand il recupere la caisse pour la premiere fois
-    else if(plateau[posJoueur[0]][posJoueur[1]] == CAISSE || 
-        plateau[posJoueur[0]][posJoueur[1]] == CAISSE_SUR_CIBLE){
+    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE || 
+        copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE_SUR_CIBLE){
 
         copiePlateau[posJoueur[0]][posJoueur[1]] = VIDE;
     }
+    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == PERSO_SUR_CIBLE){
 
-    else if(plateau[posJoueur[0]][posJoueur[1]] == PERSO_SUR_CIBLE){
+        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
+    }
+    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE_SUR_CIBLE){
 
-        copiePlateau[posJoueur[0]][posJoueur[1]] = PERSO_SUR_CIBLE;
+        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
     }
 
 
@@ -637,22 +631,22 @@ void memoire_deplacement(char *valSeul, char *valCaisse, tTabDeplacement deplace
     
     int i;
     
-    
+    i = 0;
 
-    while(deplacement[*nbrCoups] != VIDE){
-        (*nbrCoups)++;
+    while(deplacement[i] != VIDE){
+        (i)++;
     }
 
-    if(deplacement[*nbrCoups] == VIDE){
+    if(deplacement[i] == VIDE){
 
         if( (*deplSeul == true) && (*deplCaisse == false)){
 
-            deplacement[*nbrCoups] = *valSeul;
+            deplacement[i] = *valSeul;
 
         }
         else if( (*deplSeul == false) && (*deplCaisse == true)){
 
-            deplacement[*nbrCoups] = *valCaisse;
+            deplacement[i] = *valCaisse;
         
         }
     }
@@ -672,40 +666,37 @@ void init_plateau_deplacement(tTabDeplacement deplacement){
 
 
 void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePlateau, 
-        int posJoueur[2], int *x1, int *x2, int *y1, int *y2, int *zoom,
-		char *valSeul, char *valCaisse, bool *deplSeul, 
-        bool *deplCaisse, char fichier[], tPlateau plateau){
+        int posJoueur[2], int *x1, int *x2, int *y1, int *y2,
+		char *valSeul, char *valCaisse, bool *deplSeul, bool *deplCaisse, tPlateau plateau){
     
     char val_retour;
-   
+    int i;
 
-    if(deplacement[*nbrCoups + 1] == VIDE){
-        val_retour = deplacement[*nbrCoups];
+    i = 0;
+   
+    while(deplacement[i + 1] != VIDE){
+        val_retour = deplacement[i];
     }
 
     if(val_retour == SOKO_SEUL_DROITE || val_retour == SOKO_CAISSE_DROITE){
 
         remplace_car(plateau, copiePlateau,posJoueur);
-        gauche(copiePlateau, posJoueur, x1, x2, y1, y2, zoom, valCaisse,valSeul, 
-            deplacement, deplSeul,deplCaisse, nbrCoups,fichier);
+        gauche(copiePlateau, posJoueur, x1, x2, y1, y2, valCaisse,valSeul, 
+            deplacement, deplSeul,deplCaisse, nbrCoups);
 
         
-        deplacement[*nbrCoups] = VIDE;
-        (*nbrCoups)--;
         
     }
     else if(val_retour == SOKO_SEUL_GAUCHE || val_retour == SOKO_CAISSE_GAUCHE){
 
         remplace_car(plateau, copiePlateau,posJoueur);
-        droite(copiePlateau, posJoueur, x1, x2, y1, y2, zoom, valCaisse,valSeul, 
-            deplacement, deplSeul,deplCaisse, nbrCoups,fichier);
+        droite(copiePlateau, posJoueur, x1, x2, y1, y2, valCaisse,valSeul, 
+            deplacement, deplSeul,deplCaisse, nbrCoups);
 
-        
-        
-        deplacement[*nbrCoups] = VIDE;
-        (*nbrCoups)--;
-        
+
     }
+    deplacement[i] = VIDE;
+    (*nbrCoups)--;
     
     printf("%c", val_retour);
     printf("%d", *nbrCoups);
