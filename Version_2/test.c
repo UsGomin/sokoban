@@ -67,8 +67,7 @@ void affiche_plateau(tPlateau plateau, int*);
 void affiche_entete(char*, int*);
 
 void deplacer(char touche, int posJoueur[2], tPlateau plateau, 
-    int* , int* , int* , int*, int*, tPlateau copiePlateau,
-    char*, char*, tTabDeplacement deplacement, bool*, bool*);
+    int* , int* , int* , int*, int*, tPlateau copiePlateau, tTabDeplacement deplacement, bool*, bool*);
 
 bool gagne(tPlateau plateau, int *nbrCoups);
 
@@ -112,8 +111,7 @@ int main(){
 	int posJoueur[2];
     char nomFichier[26];
 
-	char valCaisse;
-	char valSeul;
+
     char verifie;
     
 	
@@ -161,7 +159,7 @@ int main(){
             touche = getchar();
 
             deplacer(touche, posJoueur, plateau, &x1, &x2, &y1, &y2, &nbrCoups, 
-                copiePlateau, &valCaisse, &valSeul, deplacement, &deplSeul, &deplCaisse);
+                copiePlateau, deplacement, &deplSeul, &deplCaisse);
 
             if(touche == RECOMMANCE){
 
@@ -301,7 +299,7 @@ void zoom_in_out( char touche, int *zoom, tPlateau plateau, char *niveau, int *n
 
 
 void deplacer(char touche, int posJoueur[2], tPlateau plateau, int *x1, int *x2, int *y1, int *y2, 
-		int *nbrCoups, tPlateau copiePlateau, char *valSeul, char *valCaisse, tTabDeplacement deplacement, 
+		int *nbrCoups, tPlateau copiePlateau, tTabDeplacement deplacement, 
         bool *deplSeul, bool *deplCaisse){
 
     *x1 = 0;
