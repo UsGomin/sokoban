@@ -247,18 +247,18 @@ void affiche_plateau(tPlateau plateau, int *zoom){
 
        	for(int k = 0 ; k < (*zoom) ; k++){
 
-			if(plateau[x][y] == PERSO_SUR_CIBLE){
+			/*if(plateau[x][y] == PERSO_SUR_CIBLE){
 
                	printf("%c", PERSO);
       		}
        		else if(plateau[x][y] == CAISSE_SUR_CIBLE){
                
            		printf("%c", CAISSE);            
-       		}
-       		else{
+       		}*/
+       		//else{
            		// convertit du decimal en caractere
            		printf("%c", plateau[x][y]);
-       		}
+       		//}
        	}
     	}
  	printf("\n"); 
@@ -342,19 +342,23 @@ void deplacer(char touche, int posJoueur[2], tPlateau plateau, int *x1, int *x2,
         if((copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] != CAISSE) && 
         (copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] != CAISSE_SUR_CIBLE)){
 
-            remplace_car(plateau, copiePlateau,posJoueur);
+            
             deplacement_joueur(posJoueur,copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse);
             memoire_deplacement(valRetour, deplacement, deplSeul, deplCaisse, nbrCoups);
+            
+            
 
             (*nbrCoups)++;
         }
         else if(copiePlateau[posJoueur[0] + *x2][posJoueur[1] + *y2] == VIDE ||
                 copiePlateau[posJoueur[0] + *x2][posJoueur[1] + *y2] == CIBLE){
         
-            remplace_car(plateau, copiePlateau,posJoueur);
+            
             deplacement_caisse(copiePlateau, posJoueur, x1, y1, x2, y2, deplSeul, deplCaisse);
             deplacement_joueur(posJoueur,copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse);
             memoire_deplacement(valRetour, deplacement, deplSeul, deplCaisse, nbrCoups);
+            
+            
             (*nbrCoups)++;
         
         }
@@ -443,6 +447,18 @@ void deplacement_joueur(int posJoueur[2], tPlateau copiePlateau, int *x1, int *x
         *deplCaisse = false;
     }
     
+    
+    //supprime et remet les bon caracteres
+    if(copiePlateau[posJoueur[0]][posJoueur[1]] == PERSO){
+
+        copiePlateau[posJoueur[0]][posJoueur[1]] = VIDE; 
+    }
+
+    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == PERSO_SUR_CIBLE){
+
+        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
+    }
+    
 }
 void deplacement_caisse(tPlateau copiePlateau, int posJoueur[2], int *x1, int *y1, int *x2, int *y2, bool *deplSeul, bool *deplCaisse){
 
@@ -463,6 +479,17 @@ void deplacement_caisse(tPlateau copiePlateau, int posJoueur[2], int *x1, int *y
         *deplCaisse = false;
     }
 
+    if(copiePlateau[posJoueur[0] + *x1 ][posJoueur[1] + *y1] == CAISSE_SUR_CIBLE){
+
+        copiePlateau[posJoueur[0]][posJoueur[1]] = PERSO; 
+    }
+
+    else if(copiePlateau[posJoueur[0] + *x1 ][posJoueur[1] + *y1] == CAISSE_SUR_CIBLE){
+
+        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
+    }
+    
+
 }
 
 /**
@@ -475,31 +502,8 @@ void deplacement_caisse(tPlateau copiePlateau, int posJoueur[2], int *x1, int *y
 void remplace_car(tPlateau plateau, tPlateau copiePlateau, int posJoueur[2]){
 
     //supprime le perso de sa pos init
-    if(copiePlateau[posJoueur[0]][posJoueur[1]] == PERSO ){
+    
 
-        copiePlateau[posJoueur[0]][posJoueur[1]] = VIDE; 
-    }
-
-    //supprime le perso a sa nouvelle place
-    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == VIDE){
-        
-        copiePlateau[posJoueur[0]][posJoueur[1]] = VIDE;
-    }
-
-    //supprime le perso quand il recupere la caisse pour la premiere fois
-    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE || 
-        copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE_SUR_CIBLE){
-
-        copiePlateau[posJoueur[0]][posJoueur[1]] = VIDE;
-    }
-    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == PERSO_SUR_CIBLE){
-
-        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
-    }
-    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE_SUR_CIBLE){
-
-        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
-    }
 
 
   
