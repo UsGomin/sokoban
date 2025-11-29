@@ -339,12 +339,13 @@ void deplacer(char touche, int posJoueur[2], tPlateau plateau, int *x1, int *x2,
     
     if(copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] != MUR){
         
-        if(copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] != CAISSE || 
-        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] != CAISSE_SUR_CIBLE){
+        if((copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] != CAISSE) && 
+        (copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] != CAISSE_SUR_CIBLE)){
 
             remplace_car(plateau, copiePlateau,posJoueur);
             deplacement_joueur(posJoueur,copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse);
             memoire_deplacement(valRetour, deplacement, deplSeul, deplCaisse, nbrCoups);
+
             (*nbrCoups)++;
         }
         else if(copiePlateau[posJoueur[0] + *x2][posJoueur[1] + *y2] == VIDE ||
@@ -358,7 +359,8 @@ void deplacer(char touche, int posJoueur[2], tPlateau plateau, int *x1, int *x2,
         
         }
         posJoueur[0] = posJoueur[0] + *x1;
-        posJoueur[1] = posJoueur[1] + *y1;   
+        posJoueur[1] = posJoueur[1] + *y1; 
+          
     }
     
 
