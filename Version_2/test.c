@@ -82,10 +82,10 @@ void deplacement_joueur(int posJoueur[2], tPlateau plateau, int* , int* , int* ,
     
 void deplacement_caisse(tPlateau copiePlateau, int posJoueur[2], int *x1, int *y1, int *x2, int *y2, bool*, bool*);
 
-void remplace_car(tPlateau plateau, tPlateau copiePlateau, int posJoueur[2]);
+
 
 void recommancer(tPlateau plateau, char fichier[], int *nbrCoups, int posJoueur[2], 
-    tPlateau copiePlateau, int*);
+    tPlateau copiePlateau, int*,tTabDeplacement deplacement);
 
 void zoom_in_out(char touche, int*, tPlateau plateau, char*, int*);
 
@@ -95,7 +95,7 @@ void memoire_deplacement(char*, tTabDeplacement deplacement,
      bool *deplSeul, bool *deplCaisse, int*);
 
 void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePlateau, 
-        int posJoueur[2], int *x1, int *x2, int *y1, int *y2, bool *deplSeul, bool *deplCaisse, tPlateau plateau);
+        int posJoueur[2], int *x1, int *x2, int *y1, int *y2, bool *deplSeul, bool *deplCaisse);
 
 void init_plateau_deplacement(tTabDeplacement deplacement);
 
@@ -119,8 +119,6 @@ int main(){
 	bool deplSeul;
 	bool deplCaisse;
 
-    //char verifie;
-    //char nomFichier[26];
 
     int x1, x2, y1, y2, nbrCoups, zoom;
     x1 = 0;
@@ -158,27 +156,26 @@ int main(){
 
             touche = getchar();
 
-            deplacer(touche, posJoueur, plateau, &x1, &x2, &y1, &y2, &nbrCoups, 
-                copiePlateau, deplacement, &deplSeul, &deplCaisse, &valRetour);
-
             if(touche == RECOMMANCE){
 
-                recommancer(plateau, niveau, &nbrCoups, posJoueur, copiePlateau, &zoom);
+                recommancer(plateau, niveau, &nbrCoups, posJoueur, copiePlateau, &zoom, deplacement);
             
             }
-            
-            if(touche == ABANDON){
+            else if(touche == ABANDON){
 
                 abandonner(copiePlateau);
                 abandon = true;
 
                 printf("Vous avez abandonner \n");
             }
-            if(touche == UNDO){
+            else if(touche == UNDO){
                 revenir_coups(deplacement, &nbrCoups, copiePlateau, posJoueur, &x1, &x2, &y1, &y2, 
-                      &deplSeul, &deplCaisse, plateau);
+                      &deplSeul, &deplCaisse);
             }
             
+        deplacer(touche, posJoueur, plateau, &x1, &x2, &y1, &y2, &nbrCoups, 
+                copiePlateau, deplacement, &deplSeul, &deplCaisse, &valRetour);
+
 	    zoom_in_out(touche, &zoom, plateau, niveau, &nbrCoups);
         affiche_entete(niveau, &nbrCoups);
         affiche_plateau(copiePlateau, &zoom);
@@ -467,47 +464,31 @@ void deplacement_caisse(tPlateau copiePlateau, int posJoueur[2], int *x1, int *y
         copiePlateau[posJoueur[0] + *x2][posJoueur[1] + *y2] = CAISSE;
         copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO;
 
-        *deplSeul = true;
-        *deplCaisse = false;
+        *deplSeul = false;
+        *deplCaisse = true;
     }
     else if(copiePlateau[posJoueur[0] + *x2][posJoueur[1] + *y2] == CIBLE){
 
         copiePlateau[posJoueur[0] + *x2][posJoueur[1] + *y2] = CAISSE_SUR_CIBLE;
         copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO;
 
-        *deplSeul = true;
-        *deplCaisse = false;
+        *deplSeul = false;
+        *deplCaisse = true;
     }
 
-    if(copiePlateau[posJoueur[0] + *x1 ][posJoueur[1] + *y1] == CAISSE_SUR_CIBLE){
+    if(copiePlateau[posJoueur[0] + *x1 ][posJoueur[1] + *y1] == CAISSE){
 
-        copiePlateau[posJoueur[0]][posJoueur[1]] = PERSO; 
+        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO; 
     }
 
     else if(copiePlateau[posJoueur[0] + *x1 ][posJoueur[1] + *y1] == CAISSE_SUR_CIBLE){
 
-        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
+        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO_SUR_CIBLE;
     }
     
 
 }
 
-/**
- * @brief procedure permettant de remplacer les caracteres si besoin
- * @param plateau de type caractere , E/S : redcoit le niveau chargé
- * @param copiePlateau de type caracteres , E/S : recoit la copie du plateau a modifer
- * @param posjoueur de type etier , E/S : recoit la position du joueur pour momdifier
- */
-
-void remplace_car(tPlateau plateau, tPlateau copiePlateau, int posJoueur[2]){
-
-    //supprime le perso de sa pos init
-    
-
-
-
-  
-}
 
 void memoire_deplacement(char *valRetour, tTabDeplacement deplacement, bool *deplSeul, bool *deplCaisse, int *nbrCoups){
     
@@ -528,7 +509,7 @@ void memoire_deplacement(char *valRetour, tTabDeplacement deplacement, bool *dep
         }
         else if( (*deplSeul == false) && (*deplCaisse == true)){
 
-            deplacement[i] = *valRetour - 20;
+            deplacement[i] = *valRetour - 32;
         
         }
     }
@@ -549,7 +530,7 @@ void init_plateau_deplacement(tTabDeplacement deplacement){
 
 void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePlateau, 
         int posJoueur[2], int *x1, int *x2, int *y1, int *y2,
-		 bool *deplSeul, bool *deplCaisse, tPlateau plateau){
+		 bool *deplSeul, bool *deplCaisse){
     
     char val_retour;
     int i;
@@ -564,30 +545,32 @@ void revenir_coups(tTabDeplacement deplacement, int *nbrCoups, tPlateau copiePla
 
     if(val_retour == SOKO_SEUL_DROITE || val_retour == SOKO_CAISSE_DROITE){
 
-        remplace_car(plateau, copiePlateau,posJoueur);
+        
 
         *y1 = -1;
         *y2 = -2;
-
-        deplacement_joueur(posJoueur, copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse);
+        
 
     }
     else if(val_retour == SOKO_SEUL_GAUCHE || val_retour == SOKO_CAISSE_GAUCHE){
 
-        remplace_car(plateau, copiePlateau,posJoueur);
+        
         
         *y1 = 1;
         *y2 = 2;
+        
 
+    }
+    
+    if(*x1 != 0 || *y1 !=0){
+        *deplSeul = false;
         deplacement_joueur(posJoueur, copiePlateau, x1, x2, y1, y2, deplSeul, deplCaisse);
-
-
+        
+        
     }
     deplacement[i] = VIDE;
     (*nbrCoups)--;
     
-    printf("%c", val_retour);
-    printf("%d", *nbrCoups);
 }
 
 
@@ -626,7 +609,7 @@ bool gagne(tPlateau plateau, int *nbrCoups){
  * @param copiPlateau de type caracteres , E/S : recharge le plateau a modifie
  */
 
-void recommancer(tPlateau plateau, char fichier[], int *nbrCoups, int posJoueur[2], tPlateau copiePlateau, int *zoom){
+void recommancer(tPlateau plateau, char fichier[], int *nbrCoups, int posJoueur[2], tPlateau copiePlateau, int *zoom, tTabDeplacement deplacement){
     
     char verife;
 
@@ -644,6 +627,7 @@ void recommancer(tPlateau plateau, char fichier[], int *nbrCoups, int posJoueur[
         affiche_entete(fichier, nbrCoups);
         affiche_plateau(plateau, zoom);
         position_joueur(plateau, fichier, posJoueur);
+        init_plateau_deplacement(deplacement);
     }
     
 
