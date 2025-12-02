@@ -244,18 +244,18 @@ void affiche_plateau(tPlateau plateau, int *zoom){
 
        	for(int k = 0 ; k < (*zoom) ; k++){
 
-			/*if(plateau[x][y] == PERSO_SUR_CIBLE){
+			if(plateau[x][y] == PERSO_SUR_CIBLE){
 
                	printf("%c", PERSO);
       		}
        		else if(plateau[x][y] == CAISSE_SUR_CIBLE){
                
            		printf("%c", CAISSE);            
-       		}*/
-       		//else{
+       		}
+       		else{
            		// convertit du decimal en caractere
            		printf("%c", plateau[x][y]);
-       		//}
+       		}
        	}
     	}
  	printf("\n"); 
@@ -476,14 +476,14 @@ void deplacement_caisse(tPlateau copiePlateau, int posJoueur[2], int *x1, int *y
         *deplCaisse = true;
     }
 
-    if(copiePlateau[posJoueur[0] + *x1 ][posJoueur[1] + *y1] == CAISSE){
+    if(copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE){
 
-        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO; 
+        copiePlateau[posJoueur[0]][posJoueur[1]] = PERSO; 
     }
 
-    else if(copiePlateau[posJoueur[0] + *x1 ][posJoueur[1] + *y1] == CAISSE_SUR_CIBLE){
+    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE_SUR_CIBLE){
 
-        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO_SUR_CIBLE;
+        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
     }
     
 
