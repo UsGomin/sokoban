@@ -514,9 +514,7 @@ void memoire_deplacement(char *valRetour, tTabDeplacement deplacement, bool *dep
         }
     }
     
-    for(i = 0 ; i < MAX ; i++){
-        printf("%c", deplacement[i]);
-    }
+
 }
 
 void init_plateau_deplacement(tTabDeplacement deplacement){
