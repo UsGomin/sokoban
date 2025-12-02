@@ -483,7 +483,7 @@ void deplacement_caisse(tPlateau copiePlateau, int posJoueur[2], int *x1, int *y
 
     else if(copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] == CAISSE_SUR_CIBLE){
 
-        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = CIBLE;
+        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO_SUR_CIBLE;
     }
     
 
