@@ -476,14 +476,14 @@ void deplacement_caisse(tPlateau copiePlateau, int posJoueur[2], int *x1, int *y
         *deplCaisse = true;
     }
 
-    if(copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE){
+    if(copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] == CAISSE){
 
-        copiePlateau[posJoueur[0]][posJoueur[1]] = PERSO; 
+        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = PERSO; 
     }
 
-    else if(copiePlateau[posJoueur[0]][posJoueur[1]] == CAISSE_SUR_CIBLE){
+    else if(copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] == CAISSE_SUR_CIBLE){
 
-        copiePlateau[posJoueur[0]][posJoueur[1]] = CIBLE;
+        copiePlateau[posJoueur[0] + *x1][posJoueur[1] + *y1] = CIBLE;
     }
     
 
