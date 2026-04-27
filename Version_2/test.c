@@ -75,17 +75,18 @@ const char SOKO_CAISSE_DROITE = 'D';
 
 /***** Entete fonction *****/
 int kbhit();
-void affiche_entete(char[]);
+void afficher_entete(char[]);
 void charger_partie(tPlateau, char[]);
 void afficher_plateau(tPlateau, int*);
 void recherche_pos_joueur(tPlateau, t_joueur*);
-void gerer_deplacement(char, t_deplacement*, tPlateau, bool*);
+void gerer_deplacement(char, t_deplacement*, tPlateau, bool*, char nomNiveau[], int *zoom, t_joueur *joueur);
 void deplacer(tPlateau, t_joueur*, t_deplacement);
 void deplacement_caisse(tPlateau, int, int, int, int, t_joueur*);
 void zoom_in_out( char, int*, tPlateau, char[]);
 bool gagner(tPlateau);
 void enregistrer_partie(tPlateau, char[]);
 void abandonner(tPlateau);
+void recommancer(tPlateau, char[], int*, t_joueur*);
 
 /***** Fonction principal *****/
 int main(){ 
@@ -108,7 +109,7 @@ int main(){
 
     charger_partie(platJeu, nomNiveau);
 
-    affiche_entete(nomNiveau);
+    afficher_entete(nomNiveau);
     afficher_plateau(platJeu, &zoom);
 
     recherche_pos_joueur(platJeu, &joueur);
@@ -118,12 +119,12 @@ int main(){
         if(kbhit()){
             touche = getchar();
 
-            gerer_deplacement(touche, &dep, platJeu, &abandon);
+            gerer_deplacement(touche, &dep, platJeu, &abandon, nomNiveau, &zoom, &joueur);
             deplacer(platJeu, &joueur, dep);
 
 
             zoom_in_out(touche, &zoom, platJeu, nomNiveau);
-            affiche_entete(nomNiveau);
+            afficher_entete(nomNiveau);
             afficher_plateau(platJeu, &zoom);
             
         }
@@ -136,7 +137,7 @@ int main(){
 
 
 
-void affiche_entete(char nomNiveau[]){
+void afficher_entete(char nomNiveau[]){
     system("clear");
     printf("%s \n\n", nomNiveau);
     printf("Z  Déplacement vers le haut \n");
@@ -189,7 +190,7 @@ void recherche_pos_joueur(tPlateau plateau, t_joueur *joueur){
     }
 }
 
-void gerer_deplacement(char touche, t_deplacement *dep, tPlateau platJeu ,bool *abandon){
+void gerer_deplacement(char touche, t_deplacement *dep, tPlateau platJeu ,bool *abandon, char nomNiveau[], int *zoom, t_joueur *joueur){
     switch(touche){
         case HAUT:
             dep->x = -1;
@@ -214,7 +215,12 @@ void gerer_deplacement(char touche, t_deplacement *dep, tPlateau platJeu ,bool *
         case ABANDON:
             abandonner(platJeu);
             *abandon = true;
+            break;
         
+        case RECOMMANCE:
+            recommancer(platJeu, nomNiveau, zoom, joueur);
+            break;
+
         default:
         dep->x = 0;
         dep->y = 0;
@@ -299,13 +305,13 @@ void zoom_in_out( char touche, int *zoom, tPlateau plateau, char nomNiveau[]){
 	if ( touche == ZOOM_IN  && (*zoom) < 3){
 		(*zoom)++;
 		system("clear");
-		affiche_entete(nomNiveau);
+		afficher_entete(nomNiveau);
 		afficher_plateau(plateau,zoom);
 	}
 	else if(touche == ZOOM_OUT && (*zoom) > 1){
 		(*zoom)--;
 		system("clear");
-		affiche_entete(nomNiveau);
+		afficher_entete(nomNiveau);
 		afficher_plateau(plateau,zoom);
 	}
 }
@@ -351,6 +357,28 @@ void abandonner(tPlateau platJeu){
     }
 
 }
+
+void recommancer(tPlateau platJeu, char fichier[], int *zoom, t_joueur *joueur){
+    
+    char verife;
+
+
+    system("clear");
+    printf("Voulez vous recommancer (\"o\" pour oui, \"n\" pour non) ? \n");
+    scanf("%c", &verife);
+
+    if(verife == OUI){
+
+        system("clear");
+        charger_partie(platJeu, fichier);
+        afficher_entete(fichier);
+        afficher_plateau(platJeu, zoom);
+        recherche_pos_joueur(platJeu, joueur);
+    }
+    
+
+}
+
 
 
 /****** FONCTION A NE PAS TOUCHER  ******/
