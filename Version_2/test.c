@@ -79,10 +79,13 @@ void affiche_entete(char[]);
 void charger_partie(tPlateau, char[]);
 void afficher_plateau(tPlateau, int*);
 void recherche_pos_joueur(tPlateau, t_joueur*);
-void gerer_deplacement(char, t_deplacement*);
+void gerer_deplacement(char, t_deplacement*, tPlateau, bool*);
 void deplacer(tPlateau, t_joueur*, t_deplacement);
 void deplacement_caisse(tPlateau, int, int, int, int, t_joueur*);
 void zoom_in_out( char, int*, tPlateau, char[]);
+bool gagner(tPlateau);
+void enregistrer_partie(tPlateau, char[]);
+void abandonner(tPlateau);
 
 /***** Fonction principal *****/
 int main(){ 
@@ -96,6 +99,9 @@ int main(){
 
     int zoom = 1; 
 
+    bool abandon = false;
+
+
     printf("Entre un niveau \n");
     scanf("%s", nomNiveau);
     strcat(nomNiveau, ".sok");
@@ -107,12 +113,12 @@ int main(){
 
     recherche_pos_joueur(platJeu, &joueur);
 
-    while(true){
+    while((gagner(platJeu) != true) && (abandon != true)){
 
         if(kbhit()){
             touche = getchar();
 
-            gerer_deplacement(touche, &dep);
+            gerer_deplacement(touche, &dep, platJeu, &abandon);
             deplacer(platJeu, &joueur, dep);
 
 
@@ -123,6 +129,8 @@ int main(){
         }
         
     }
+
+    return EXIT_SUCCESS;
 
 }
 
@@ -135,6 +143,8 @@ void affiche_entete(char nomNiveau[]){
     printf("Q  Déplacement vers la gauche \n");
     printf("S  Déplacement vers le bas \n");
     printf("D  Déplacement vers la droite \n");
+    printf("X  Abandonner \n");
+    printf("R  Recommencer \n");
     printf("+  Zommer\n");
     printf("-  Dezoomer\n");
 }
@@ -179,7 +189,7 @@ void recherche_pos_joueur(tPlateau plateau, t_joueur *joueur){
     }
 }
 
-void gerer_deplacement(char touche, t_deplacement *dep){
+void gerer_deplacement(char touche, t_deplacement *dep, tPlateau platJeu ,bool *abandon){
     switch(touche){
         case HAUT:
             dep->x = -1;
@@ -201,6 +211,10 @@ void gerer_deplacement(char touche, t_deplacement *dep){
             dep->y = -1;
             break;
 
+        case ABANDON:
+            abandonner(platJeu);
+            *abandon = true;
+        
         default:
         dep->x = 0;
         dep->y = 0;
@@ -213,6 +227,11 @@ void deplacer(tPlateau platJeu, t_joueur *joueur, t_deplacement dep){
 
     int posApresSuivanteX = posSuivanteX + dep.x;
     int posApresSuivanteY = posSuivanteY + dep.y;
+
+    if(dep.x == 0 && dep.y == 0){
+        joueur->posX += 0;
+        joueur->posY += 0;
+    }
 
     if(platJeu[posSuivanteX][posSuivanteY] != MUR && (posSuivanteX < TAILLE 
         && posSuivanteY < TAILLE) && (posSuivanteX >= 0 && posSuivanteY >= 0)){
@@ -292,12 +311,46 @@ void zoom_in_out( char touche, int *zoom, tPlateau plateau, char nomNiveau[]){
 }
 
 
+bool gagner(tPlateau plateau){
+
+    for(int x = 0 ; x < TAILLE ; x++){
+        for(int y = 0; y < TAILLE ; y++){
+            if(plateau[x][y] == CIBLE || plateau[x][y] == PERSO_SUR_CIBLE){
+
+                return false;
+                
+            }
+        }
+    }
+    return true;
+}
+
+/**
+ * @brief procedure qui permet d'abandonner et d'enregisré si voulu la partie
+ * @param platJeu de type caracteres, E/S : recoit le plateau de jeu
+ */
+void abandonner(tPlateau platJeu){
+    
+    char niveau[26];
+    char verife;
 
 
+    system("clear");
+    printf("Voulez vous enregistrez (\"o\" pour oui, \"n\" pour non) ? \n");
+    scanf("%c", &verife);
 
+    if(verife == OUI){
 
+        printf("Donnew un nom de fichier (max 25 car) \n");
+        scanf("%s", niveau);
+        strcat(niveau, ".sok");
+        
+        enregistrer_partie(platJeu,niveau);
+        printf(("vous avez abandonner\n"));
 
+    }
 
+}
 
 
 /****** FONCTION A NE PAS TOUCHER  ******/
@@ -349,4 +402,18 @@ void charger_partie(tPlateau plateau, char fichier[]){
         }
         fclose(f);
     }
+}
+
+void enregistrer_partie(tPlateau plateau, char fichier[]){
+    FILE * f;
+    char finDeLigne='\n';
+
+    f = fopen(fichier, "w");
+    for (int ligne=0 ; ligne<TAILLE ; ligne++){
+        for (int colonne=0 ; colonne<TAILLE ; colonne++){
+            fwrite(&plateau[ligne][colonne], sizeof(char), 1, f);
+        }
+        fwrite(&finDeLigne, sizeof(char), 1, f);
+    }
+    fclose(f);
 }
