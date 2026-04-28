@@ -75,18 +75,20 @@ const char SOKO_CAISSE_DROITE = 'D';
 
 /***** Entete fonction *****/
 int kbhit();
-void afficher_entete(char[]);
+void afficher_entete(char[], int);
 void charger_partie(tPlateau, char[]);
 void afficher_plateau(tPlateau, int*);
 void recherche_pos_joueur(tPlateau, t_joueur*);
-void gerer_deplacement(char, t_deplacement*, tPlateau, bool*, char nomNiveau[], int *zoom, t_joueur *joueur);
-void deplacer(tPlateau, t_joueur*, t_deplacement);
+void gerer_deplacement(char, t_deplacement*, tPlateau, bool*, char nomNiveau[], int *zoom, t_joueur *joueur, int, tTabDeplacement);
+void deplacer(tPlateau, t_joueur*, t_deplacement, int*, tTabDeplacement, char);
 void deplacement_caisse(tPlateau, int, int, int, int, t_joueur*);
-void zoom_in_out( char, int*, tPlateau, char[]);
+void zoom_in_out( char, int*, tPlateau, char[], int);
 bool gagner(tPlateau);
 void enregistrer_partie(tPlateau, char[]);
 void abandonner(tPlateau);
-void recommancer(tPlateau, char[], int*, t_joueur*);
+void recommancer(tPlateau, char[], int*, t_joueur*, int, tTabDeplacement);
+void init_plateau_deplacement(tTabDeplacement);
+void memoire_deplacement(tTabDeplacement, char, bool);
 
 /***** Fonction principal *****/
 int main(){ 
@@ -94,11 +96,13 @@ int main(){
     tPlateau platJeu;
     t_joueur joueur;
     t_deplacement dep;
+    tTabDeplacement tabDep;
 
     char nomNiveau[25];
     char touche;
 
     int zoom = 1; 
+    int nbCoups = 0;
 
     bool abandon = false;
 
@@ -109,22 +113,24 @@ int main(){
 
     charger_partie(platJeu, nomNiveau);
 
-    afficher_entete(nomNiveau);
+    afficher_entete(nomNiveau, nbCoups);
     afficher_plateau(platJeu, &zoom);
 
     recherche_pos_joueur(platJeu, &joueur);
+
+    init_plateau_deplacement(tabDep);
 
     while((gagner(platJeu) != true) && (abandon != true)){
 
         if(kbhit()){
             touche = getchar();
 
-            gerer_deplacement(touche, &dep, platJeu, &abandon, nomNiveau, &zoom, &joueur);
-            deplacer(platJeu, &joueur, dep);
+            gerer_deplacement(touche, &dep, platJeu, &abandon, nomNiveau, &zoom, &joueur, nbCoups, tabDep);
+            deplacer(platJeu, &joueur, dep, &nbCoups, tabDep, touche);
 
 
-            zoom_in_out(touche, &zoom, platJeu, nomNiveau);
-            afficher_entete(nomNiveau);
+            zoom_in_out(touche, &zoom, platJeu, nomNiveau, nbCoups);
+            afficher_entete(nomNiveau, nbCoups);
             afficher_plateau(platJeu, &zoom);
             
         }
@@ -137,7 +143,7 @@ int main(){
 
 
 
-void afficher_entete(char nomNiveau[]){
+void afficher_entete(char nomNiveau[], int nbCoups){
     system("clear");
     printf("%s \n\n", nomNiveau);
     printf("Z  Déplacement vers le haut \n");
@@ -147,7 +153,9 @@ void afficher_entete(char nomNiveau[]){
     printf("X  Abandonner \n");
     printf("R  Recommencer \n");
     printf("+  Zommer\n");
-    printf("-  Dezoomer\n");
+    printf("-  Dezoomer\n\n");
+    printf("Nombre de mouvements: %d\n", nbCoups);
+
 }
 
 void afficher_plateau(tPlateau plateau, int *zoom){
@@ -190,7 +198,7 @@ void recherche_pos_joueur(tPlateau plateau, t_joueur *joueur){
     }
 }
 
-void gerer_deplacement(char touche, t_deplacement *dep, tPlateau platJeu ,bool *abandon, char nomNiveau[], int *zoom, t_joueur *joueur){
+void gerer_deplacement(char touche, t_deplacement *dep, tPlateau platJeu ,bool *abandon, char nomNiveau[], int *zoom, t_joueur *joueur, int nbCoups, tTabDeplacement tabDep){
     switch(touche){
         case HAUT:
             dep->x = -1;
@@ -218,7 +226,7 @@ void gerer_deplacement(char touche, t_deplacement *dep, tPlateau platJeu ,bool *
             break;
         
         case RECOMMANCE:
-            recommancer(platJeu, nomNiveau, zoom, joueur);
+            recommancer(platJeu, nomNiveau, zoom, joueur, nbCoups, tabDep);
             break;
 
         default:
@@ -227,20 +235,18 @@ void gerer_deplacement(char touche, t_deplacement *dep, tPlateau platJeu ,bool *
     }
 }
 
-void deplacer(tPlateau platJeu, t_joueur *joueur, t_deplacement dep){
+void deplacer(tPlateau platJeu, t_joueur *joueur, t_deplacement dep, int *nbCoups, tTabDeplacement tabDep, char touche){
     int posSuivanteX = joueur->posX + dep.x;
     int posSuivanteY = joueur->posY + dep.y;
 
     int posApresSuivanteX = posSuivanteX + dep.x;
     int posApresSuivanteY = posSuivanteY + dep.y;
 
-    if(dep.x == 0 && dep.y == 0){
-        joueur->posX += 0;
-        joueur->posY += 0;
-    }
+    bool depCaisse = false;
+    
 
     if(platJeu[posSuivanteX][posSuivanteY] != MUR && (posSuivanteX < TAILLE 
-        && posSuivanteY < TAILLE) && (posSuivanteX >= 0 && posSuivanteY >= 0)){
+        && posSuivanteY < TAILLE) && (posSuivanteX >= 0 && posSuivanteY >= 0) && (dep.x != 0 || dep.y != 0)){
 
         if(platJeu[posSuivanteX][posSuivanteY] != CAISSE &&
             platJeu[posSuivanteX][posSuivanteY] != CAISSE_SUR_CIBLE){
@@ -261,6 +267,9 @@ void deplacer(tPlateau platJeu, t_joueur *joueur, t_deplacement dep){
             
             joueur->posX += dep.x;
             joueur->posY += dep.y;
+
+            depCaisse = false;
+            memoire_deplacement(tabDep, touche, depCaisse);
         }
 
         else if(platJeu[posApresSuivanteX][posApresSuivanteY] != MUR && 
@@ -271,9 +280,13 @@ void deplacer(tPlateau platJeu, t_joueur *joueur, t_deplacement dep){
 
                     joueur->posX += dep.x;
                     joueur->posY += dep.y;
+
+                    depCaisse = true;
+                    memoire_deplacement(tabDep, touche, depCaisse);
                 }
-        
+        (*nbCoups)++;
     }
+
 }
 
 void deplacement_caisse(tPlateau platJeu, int posApresSuivanteX, int posApresSuivanteY, int posSuivanteX, int posSuivanteY, t_joueur *joueur){
@@ -301,17 +314,17 @@ void deplacement_caisse(tPlateau platJeu, int posApresSuivanteX, int posApresSui
 }
 
 
-void zoom_in_out( char touche, int *zoom, tPlateau plateau, char nomNiveau[]){
+void zoom_in_out( char touche, int *zoom, tPlateau plateau, char nomNiveau[], int nbCoups){
 	if ( touche == ZOOM_IN  && (*zoom) < 3){
 		(*zoom)++;
 		system("clear");
-		afficher_entete(nomNiveau);
+		afficher_entete(nomNiveau, nbCoups);
 		afficher_plateau(plateau,zoom);
 	}
 	else if(touche == ZOOM_OUT && (*zoom) > 1){
 		(*zoom)--;
 		system("clear");
-		afficher_entete(nomNiveau);
+		afficher_entete(nomNiveau, nbCoups);
 		afficher_plateau(plateau,zoom);
 	}
 }
@@ -358,7 +371,7 @@ void abandonner(tPlateau platJeu){
 
 }
 
-void recommancer(tPlateau platJeu, char fichier[], int *zoom, t_joueur *joueur){
+void recommancer(tPlateau platJeu, char fichier[], int *zoom, t_joueur *joueur, int nbCoups, tTabDeplacement tabDep){
     
     char verife;
 
@@ -371,12 +384,70 @@ void recommancer(tPlateau platJeu, char fichier[], int *zoom, t_joueur *joueur){
 
         system("clear");
         charger_partie(platJeu, fichier);
-        afficher_entete(fichier);
+        afficher_entete(fichier, nbCoups);
         afficher_plateau(platJeu, zoom);
         recherche_pos_joueur(platJeu, joueur);
+        init_plateau_deplacement(tabDep);
+
     }
     
 
+}
+
+
+/**
+ * @brief procedure permettant d'initialiser le tableau qui permet d'enregistrer les deplacements
+ * @param deplacement de type chaine , E/S : tableau dans lequel enregistrer les deplacements
+ */
+void init_plateau_deplacement(tTabDeplacement tabDep){
+    int i;
+
+    for(i = 0 ; i < MAX ; i++){
+        tabDep[i] = VIDE;
+    }
+}
+
+
+void memoire_deplacement(tTabDeplacement tabDep, char touche, bool depCaisse){
+    
+    int i;
+    char valRetour;
+    
+    i = 0;
+
+    while(tabDep[i] != VIDE){
+        i++;
+    }
+
+    switch (touche)
+    {
+    case DROITE:
+        valRetour = depCaisse ? SOKO_CAISSE_DROITE : SOKO_SEUL_DROITE;
+        tabDep[i] = valRetour;
+        break;
+    
+    case GAUCHE:
+        valRetour = depCaisse ? SOKO_CAISSE_GAUCHE : SOKO_SEUL_GAUCHE;
+        tabDep[i] = valRetour;
+        break;
+
+    case HAUT:
+        valRetour = depCaisse ? SOKO_CAISSE_HAUT : SOKO_SEUL_HAUT;
+        tabDep[i] = valRetour;
+        break;
+
+    case BAS:
+        valRetour = depCaisse ? SOKO_CAISSE_BAS : SOKO_SEUL_BAS;
+        tabDep[i] = valRetour;
+        break;
+    
+    default:
+        break;
+    }
+    
+    for(i = 0 ; i < MAX ; i++){
+        printf("%c", tabDep[i]);
+    }
 }
 
 
